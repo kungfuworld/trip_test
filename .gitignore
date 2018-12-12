@@ -1,3 +1,10 @@
+.idea/
+target/
+*.iml
+.rebel.xml.bak
+.rebel.xml
+generatorConfig.xml
+
 # Compiled class file
 *.class
 
