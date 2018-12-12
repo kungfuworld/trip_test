@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wolfcode.trip.base.mapper.StrategyDetailMapper">
+  <resultMap id="BaseResultMap" type="cn.wolfcode.trip.base.domain.StrategyDetail">
+    <id column="id" property="id" />
+    <result column="title" property="title" />
+    <result column="createTime" property="createTime" />
+    <result column="releaseTime" property="releaseTime" />
+    <result column="sequence" property="sequence" />
+    <result column="coverUrl" property="coverUrl" />
+    <result column="state" property="state" />
+    <association property="catalog" javaType="strategyCatalog" columnPrefix="sc_">
+      <id column="id" property="id"/>
+      <result column="name" property="name"/>
+      <association property="strategy" javaType="strategy" columnPrefix="s_">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+      </association>
+    </association>
+    <association property="strategyContent" javaType="strategyContent" columnPrefix="con_">
+      <id column="id" property="id"/>
+      <result column="content" property="content"/>
+    </association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey">
+    DELETE FROM strategydetail
+    WHERE id = #{id}
+  </delete>
+  <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+    INSERT INTO strategydetail (title, createTime, releaseTime, sequence, catalog_id, coverUrl,
+      state)
+    VALUES (#{title}, #{createTime}, #{releaseTime}, #{sequence}, #{catalog.id}, #{coverUrl},
+      #{state})
+  </insert>
+  <update id="updateByPrimaryKey">
+    UPDATE strategydetail
+    SET title = #{title},
+      releaseTime = #{releaseTime},
+      sequence = #{sequence},
+      catalog_id = #{catalog.id},
+      coverUrl = #{coverUrl},
+      state = #{state}
+    WHERE id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    SELECT sd.id, title, createTime, releaseTime, sequence, catalog_id, coverUrl, state,
+    con.id con_id, con.content con_content
+    FROM strategydetail sd
+    JOIN strategycontent con
+    ON sd.id = con.id
+    WHERE sd.id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    SELECT id, title, createTime, releaseTime, sequence, catalog_id, coverUrl, state
+    FROM strategydetail
+  </select>
+    <select id="queryForList" resultMap="BaseResultMap">
+      SELECT st.id, st.title, st.createTime, st.releaseTime, st.sequence, st.catalog_id, st.coverUrl, st.state,
+      sc.id sc_id, sc.name sc_name,
+      s.id sc_s_id, s.title sc_s_title
+      FROM strategydetail st
+      JOIN strategycatalog sc
+      ON st.catalog_id = sc.id
+      JOIN strategy s
+      ON s.id = sc.strategy_id
+      <where>
+        <if test="keywords != null">
+          st.title LIKE CONCAT("%",#{keywords},"%")
+        </if>
+      </where>
+    </select>
+    <select id="selectMaxSequence" resultType="int">
+      SELECT IFNULL(MAX(sequence),0) FROM strategydetail
+        WHERE catalog_id = #{Long catalogId}
+    </select>
+    <select id="selectByCatalogId" resultType="strategyDetail">
+      SELECT id, title, createTime, releaseTime, sequence, catalog_id, coverUrl, state
+    FROM strategydetail
+    WHERE catalog_id = #{strategyId}
+    </select>
+</mapper>

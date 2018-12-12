@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+    <import resource="classpath:applicationContext.xml"/>
+    <context:component-scan base-package="cn.wolfcode.trip.web.controller"/>
+    <mvc:annotation-driven />
+   <!-- <mvc:default-servlet-handler/>-->
+   <!-- 配置视图解析器
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>-->
+
+
+    <!--配置freeMarker的模板路径 -->
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <!-- 配置freemarker的文件编码 -->
+        <property name="defaultEncoding" value="UTF-8" />
+        <!-- 配置freemarker寻找模板的路径(相当于前缀) -->
+        <property name="templateLoaderPath" value="/WEB-INF/views/" />
+    </bean>
+
+    <!--freemarker视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <!-- 是否在model自动把session中的attribute导入进去; -->
+        <property name="exposeSessionAttributes" value="true" />
+        <!-- 配置逻辑视图自动添加的后缀名 -->
+        <property name="suffix" value=".ftl" />
+        <!-- 配置视图的输出HTML的contentType -->
+        <property name="contentType" value="text/html;charset=UTF-8" />
+    </bean>
+
+<!--
+    &lt;!&ndash;SpringMVC的异常处理解析器&ndash;&gt;
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        &lt;!&ndash; 定义默认的异常处理页面，当该异常类型的注册时使用 &ndash;&gt;
+        <property name="defaultErrorView" value="common/error"/>
+        &lt;!&ndash; 定义异常处理页面用来获取异常信息的变量名，默认名为exception &ndash;&gt;
+        <property name="exceptionAttribute" value="ex"/>
+        &lt;!&ndash; 定义需要特殊处理的异常，用类名或完全路径名作为key，异常也页名作为值 &ndash;&gt;
+        <property name="exceptionMappings">
+            <value>
+                org.apache.shiro.authz.UnauthorizedException=common/nopermission
+                &lt;!&ndash; 这里还可以继续扩展不同异常类型的异常处理 &ndash;&gt;
+            </value>
+        </property>
+    </bean>-->
+
+    <!--文件上传解析器-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="#{1024*1024*10}"/>
+    </bean>
+</beans>

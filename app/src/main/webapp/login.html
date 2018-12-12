@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>登录页面</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="/js/bootstrap-4.1.1-dist/css/bootstrap.min.css">
+	<script src="/js/jquery/jquery.min.js"></script>
+	<script src="/js/bootstrap-4.1.1-dist/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="/css/font/css/font-awesome.min.css" >
+	<link rel="stylesheet" href="/css/reset.css" >
+	<link rel="stylesheet" href="/css/login.css" >
+	<link rel="stylesheet" href="/js/plugins/dialog2/dialog.css">
+	<script type="text/javascript" src="/js/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/plugins/form/jquery.form.js"></script>
+	<script type="text/javascript" src="/js/plugins/dialog2/dialog.min.js"></script>
+	<script type="text/javascript">
+		$("#loginForm").ajaxForm(function (data) {
+			if(data.success){
+                var userJson = JSON.stringify(data.result);
+                sessionStorage.setItem("user",userJson);
+                //如果此时该页面在侧边栏窗口中，需要父窗口跳转页面
+                parent.location.href="/index.html";
+			} else{
+                $(document).dialog({
+                    overlayClose: true,
+                    content: data.msg
+                });
+			}
+        });
+	</script>
+</head>
+<body>
+<div class="container" >
+	<h5>登录</h5>
+
+	<div class="card card-container ">
+		<i id="profile-img" class="fa fa-user-circle fa-5x profile-img" ></i>
+		<form class="form-signin" id="loginForm" action="/sessions" method="post">
+			<input type="email"  name="email" value="chenhui@wolfcode.cn" class="form-control badge-pill" placeholder="邮箱"  >
+			<input type="password"  name="password" value="1" class="form-control badge-pill" placeholder="密码" >
+			<a href="#" class="forgot-password">
+				忘记密码？
+			</a>
+			<button class="btn btn-lg badge-pill" type="submit">登录</button>
+		</form>
+	</div>
+
+
+	<a href="register.html" class="registerLink" >
+		新用户？点击这里注册
+	</a>
+</div>
+
+</body>
+</html>

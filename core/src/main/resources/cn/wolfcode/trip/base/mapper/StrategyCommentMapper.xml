@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wolfcode.trip.base.mapper.StrategyCommentMapper">
+  <resultMap id="BaseResultMap" type="cn.wolfcode.trip.base.domain.StrategyComment">
+    <id column="id" property="id" />
+    <result column="createTime" property="createTime" />
+    <result column="content" property="content" />
+    <result column="imgUrls" property="imgUrls" />
+    <result column="starNum" property="starNum" />
+    <!--<result column="strategy_id" property="strategy_id" />-->
+    <result column="state" property="state" />
+    <result column="commendTime" property="commendTime" />
+    <association property="user" javaType="user" columnPrefix="u_">
+      <id column="id" property="id"/>
+      <result column="nickName" property="nickName"/>
+      <result column="headImgUrl" property="headImgUrl"/>
+    </association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey">
+    DELETE FROM strategycomment
+    WHERE id = #{id}
+  </delete>
+  <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+    INSERT INTO strategycomment (user_id, createTime, content, imgUrls, starNum, strategy_id,
+      state, commendTime)
+    VALUES (#{user.id}, #{createTime}, #{content}, #{imgUrls}, #{starNum}, #{strategy.id},
+      #{state}, #{commendTime})
+  </insert>
+  <update id="updateByPrimaryKey">
+    UPDATE strategycomment
+    SET user_id = #{user.id},
+      createTime = #{createTime},
+      content = #{content},
+      imgUrls = #{imgUrls},
+      starNum = #{starNum},
+      strategy_id = #{strategy.id},
+      state = #{state},
+      commendTime = #{commendTime}
+    WHERE id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    SELECT id, user_id, createTime, content, imgUrls, starNum, strategy_id, state, commendTime
+    FROM strategycomment
+    WHERE id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    SELECT id, user_id, createTime, content, imgUrls, starNum, strategy_id, state, commendTime
+    FROM strategycomment
+  </select>
+  <select id="queryForList" resultMap="BaseResultMap">
+    SELECT sc.id, user_id, createTime, content, imgUrls, starNum, strategy_id, state, commendTime,
+    u.id u_id, u.nickName u_nickName, u.headImgUrl u_headImgUrl
+    FROM strategycomment sc
+    JOIN user u
+    ON u.id=sc.user_id
+    <where>
+      <if test="strategyId != null">
+        AND strategy_id = #{strategyId}
+      </if>
+    </where>
+  </select>
+</mapper>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>简单个人页面</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content= "no-cache, must-revalidate">
+    <link rel="stylesheet" href="/js/bootstrap-4.1.1-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/css/reset.css">
+    <script src="/js/jquery/jquery.min.js"></script>
+    <script src="/js/plugins/jrender/jrender.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var user = JSON.parse(sessionStorage.getItem("user"));
+            console.log(user);
+            $(".simplePerson").renderValues(user);
+
+            $("#logoutBtn").click(function () {
+                $.ajax({
+                    url:"/sessions",
+                    type:"delete",
+                    success:function () {
+                        sessionStorage.removeItem("user");
+                        parent.location.href="/index.html"
+                    }
+                })
+            });
+
+            /*除了可以用class来选择，也可以用标签和属性的组合*/
+            $("a[data-href]").click(function () {
+                window.parent.location.href=$(this).data("href");
+            });
+        });
+    </script>
+    <style>
+        .simplePerson {
+            text-align: center;
+            color: #7A786F;
+            padding-top: 50px;
+            padding-bottom: 110px;
+            background-color: #E8E6E8;
+        }
+
+        .mymenu {
+            margin: 15px auto;
+        }
+
+        .mymenu i {
+            margin-right: 20px;
+        }
+
+    </style>
+
+
+
+</head>
+
+
+<body>
+
+<div class="simplePerson">
+    <img  class="rounded-circle" width="20%" render-src="headImgUrl">
+    <p><strong render-html="nickName" >喵喵</strong></p>
+    <p render-html="email">chenhui@wolfcode.cn</p>
+    <hr>
+    <div class="mymenu">
+        <i class="fa fa-user fa-2x fa-fw"></i>
+        <a class="skip" data-href="/mine/profiles.html" >
+            我的</a>
+    </div>
+    <div class="mymenu">
+        <i class="fa fa-bell fa-2x fa-fw"></i>
+        <a href="#">信息</a>
+    </div>
+    <div class="mymenu">
+        <i class="fa fa-comment fa-2x fa-fw"></i>
+        <a href="#">通知</a>
+    </div>
+    <div class="mymenu">
+        <i class="fa fa-cog fa-2x fa-fw"></i>
+        <a href=/mine/info.html">设置</a>
+    </div>
+    <hr style="margin-top: 50px;">
+    <div class="mymenu">
+        <i class="fa fa-sign-out fa-2x fa-fw"></i>
+        <a id="logoutBtn">退出登录</a>
+    </div>
+</div>
+
+
+
+</body>
+
+</html>

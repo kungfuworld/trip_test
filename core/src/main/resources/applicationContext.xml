@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+        <context:component-scan base-package="cn.wolfcode.trip.base.service"/>
+        <context:property-placeholder location="classpath:db.properties"/>
+        <!--配置连接池-->
+        <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+                <property name="driverClassName" value="${jdbc_driverClassName}"/>
+                <property name="url" value="${jdbc_url}"/>
+                <property name="username" value="${jdbc_username}"/>
+                <property name="password" value="${jdbc_password}"/>
+        </bean>
+        <!--配置SqlSessionFactroy-->
+        <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+                <property name="dataSource" ref="dataSource"/>
+                <property name="typeAliasesPackage" value="cn.wolfcode.trip.base.domain"/>
+                <property name="configLocation" value="classpath:mybatis-config.xml"/>
+                <property name="mapperLocations" value="classpath:cn/wolfcode/trip/base/mapper/*Mapper.xml"/>
+        </bean>
+        <!--配置Mapper-->
+        <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+                <property name="basePackage" value="cn.wolfcode.trip.base.mapper"/>
+        </bean>
+        <!--配置事务管理器-->
+        <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+                <property name="dataSource" ref="dataSource"/>
+        </bean>
+        <!--配置事务增强-->
+        <!--配置where-->
+        <!--注意:AoP的配置影响着后面shiro的授权管理-->
+        <aop:config>
+                <aop:pointcut id="txPoincut" expression="execution(* cn.wolfcode.trip.base.service.impl.*ServiceImpl.*(..))"/>
+                <!--<aop:advisor advice-ref="txAdvice" pointcut-ref="txPoincut"/>-->
+        </aop:config>
+        <!--配置切面when和what-->
+        <tx:advice id="txAdvice" transaction-manager="transactionManager">
+                <tx:attributes>
+                        <tx:method name="*get" read-only="true"/>
+                        <tx:method name="*list" read-only="true"/>
+                        <tx:method name="*select" read-only="true"/>
+                        <tx:method name="*query" read-only="true"/>
+                        <tx:method name="*count" read-only="true"/>
+                        <tx:method name="*" />
+                </tx:attributes>
+        </tx:advice>
+</beans>

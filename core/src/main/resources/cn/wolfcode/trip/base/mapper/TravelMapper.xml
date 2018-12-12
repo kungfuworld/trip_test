@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wolfcode.trip.base.mapper.TravelMapper">
+ <!-- &lt;resultMap id="BaseResultMap" type="cn.wolfcode.trip.base.domain.Travel"&gt;
+    &lt;id column="id" property="id" /&gt;
+    &lt;result column="title" property="title" /&gt;
+    &lt;result column="travelTime" property="travelTime" /&gt;
+    &lt;result column="perExpends" property="perExpends" /&gt;
+    &lt;result column="days" property="days" /&gt;
+    &lt;result column="person" property="person" /&gt;
+    &lt;result column="createTime" property="createTime" /&gt;
+    &lt;result column="releaseTime" property="releaseTime" /&gt;
+    &lt;result column="isPublic" property="isPublic" /&gt;
+    &lt;result column="coverUrl" property="coverUrl" /&gt;
+    &lt;result column="lastUpdateTime" property="lastUpdateTime" /&gt;
+    &lt;result column="state" property="state" /&gt;
+    &lt;association property="author" javaType="user"&gt;
+      &lt;id column="author_id" property="id"/&gt;
+    &lt;/association&gt;
+    &lt;association property="place" javaType="region"&gt;
+      &lt;id column="place_id" property="id"/&gt;
+    &lt;/association&gt;
+  &lt;/resultMap&gt;-->
+  <resultMap id="BaseResultMap" type="cn.wolfcode.trip.base.domain.Travel">
+    <id column="id" property="id" />
+    <result column="title" property="title" />
+    <result column="travelTime" property="travelTime" />
+    <result column="perExpends" property="perExpends" />
+    <result column="days" property="days" />
+    <result column="person" property="person" />
+    <result column="createTime" property="createTime" />
+    <result column="releaseTime" property="releaseTime" />
+    <result column="isPublic" property="isPublic" />
+    <result column="coverUrl" property="coverUrl" />
+    <result column="lastUpdateTime" property="lastUpdateTime" />
+    <result column="state" property="state" />
+    <association columnPrefix="u_" javaType="user" property="author">
+      <id column="id" property="id" />
+      <result column="nickName" property="nickName" />
+      <result column="headImgUrl" property="headImgUrl" />
+    </association>
+    <association columnPrefix="r_" javaType="region" property="place">
+      <id column="id" property="id" />
+      <result column="name" property="name" />
+    </association>
+    <association columnPrefix="tr_" javaType="travelContent" property="travelContent">
+      <id column="id" property="id" />
+      <id column="content" property="content" />
+    </association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey">
+    delete from travel
+    where id = #{id}
+  </delete>
+  <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+    insert into travel (title, travelTime, perExpends, days, person, author_id, 
+      createTime, releaseTime, isPublic, place_id, coverUrl, lastUpdateTime, 
+      state)
+    values (#{title}, #{travelTime}, #{perExpends}, #{days}, #{person}, #{author.id},
+      #{createTime}, #{releaseTime}, #{isPublic}, #{place.id}, #{coverUrl}, #{lastUpdateTime},
+      #{state})
+  </insert>
+  <update id="updateByPrimaryKey">
+    update travel
+    set title = #{title},
+      travelTime = #{travelTime},
+      perExpends = #{perExpends},
+      days = #{days},
+      person = #{person},
+      releaseTime = #{releaseTime},
+      isPublic = #{isPublic},
+      place_id = #{place.id},
+      coverUrl = #{coverUrl},
+      lastUpdateTime = #{lastUpdateTime},
+      state = #{state}
+    where id = #{id}
+  </update>
+  <update id="changeState">
+    update travel
+    SET
+    releaseTime = #{releaseTime},
+    state = #{state}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select t.id, title, travelTime, perExpends, days, person, author_id, createTime, releaseTime,
+    isPublic, place_id, coverUrl, lastUpdateTime, t.state,
+    tr.id tr_id,tr.content tr_content,
+    u.id u_id, u.nickName u_nickName, u.headImgUrl u_headImgUrl,
+    r.id r_id, r.name r_name
+    from travel t JOIN travelcontent tr
+    ON t.id = tr.id
+    JOIN user u
+    ON t.author_id = u.id
+    JOIN region r
+    ON t.place_id = r.id
+    where t.id = #{id}
+  </select>
+  <select id="selectAll" resultType="travel">
+    select id, title, travelTime, perExpends, days, person, author_id, createTime, releaseTime, 
+    isPublic, place_id, coverUrl, lastUpdateTime, state
+    from travel
+  </select>
+
+  <select id="selectForList" resultMap="BaseResultMap">
+    select t.id, title, travelTime, perExpends, days, person, author_id, createTime, releaseTime,
+    isPublic, place_id, coverUrl, lastUpdateTime, t.state,
+    u.id u_id, u.nickName u_nickName, u.headImgUrl u_headImgUrl,
+    r.id r_id, r.name r_name
+    from travel t JOIN user u
+    ON t.author_id = u.id
+    JOIN region r
+    ON t.place_id = r.id
+    <where>
+      <if test="authorId != null">
+        AND author_id = #{authorId}
+      </if>
+      <if test="state!=null and state&gt;-2">
+        AND t.state = #{state}
+      </if>
+      <if test="isPublic != false">
+        AND isPublic = 1
+      </if>
+      <if test="keywords != null">
+        AND title LIKE CONCAT("%",#{keywords},"%")
+      </if>
+    </where>
+  </select>
+</mapper>
